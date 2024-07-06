@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación API REST - Eventos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #000000;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 10px;
+            border: 1px solid #00ff22;
+            overflow-x: auto;
+            border-radius: 10px;
+        }
+        code {
+            color: rgb(0, 255, 0);
+            background-color: transparent;
+            padding: 0;
+            border-radius: 10;
+        }
+        .endpoint {
+            margin-bottom: 20px;
+        }
+        .btn-get, .btn-try, .btn-try-filter, .btn-react, .btn-flutter {
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px 5px 10px 0;
+        }
+        .btn-get {
+            background-color: #43c447;
+        }
+        .btn-try, .btn-react, .btn-flutter {
+            background-color: #888;
+        }
+        .btn-react.active, .btn-flutter.active {
+            background-color: #007BFF;
+        }
+        .btn-try.active, .btn-try-filter.active {
+            background-color: #00ff37;
+        }
+        .response, .response-filter, .example{
+            display: block;
+            margin-top: 20px;
+            margin-left: 10px;
+        }
+        .code-get-events{
+          font-size: 17px;
+        }
+        /*Para sección de eventos*/
+        .try-section, .try-section-filter{
+            display: none;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .info-get-events-filter{
+          border-radius: 10px;
+            border: 1px solid rgb(216, 216, 216);
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            padding: 5px;
+            color: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+        .info-get-events {
+            border-radius: 10px;
+            border: 1px solid rgb(216, 216, 216);
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            padding: 5px;
+            color: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+        .text-code-get, .text-code-get-filter {
+            flex: 1;
+        }
+        .btn-try, .btn-try-filter {
+            margin-left: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #response, #response-filter{
+          margin-top: 15px;
+          display: none;
+          background: #1a1a1a;
+            padding: 10px;
+            border: 1px solid #00ff22;
+            overflow-x: auto;
+            border-radius: 10px;
+            color: white;
+        }
+        #inp-filter{
+          border-radius: 13px;
+          width: 120px;
+          height: 40px;
+          text-align: center;
+          font-size: 15px;
+        }
+    </style>
+    <script>
+        function showEndpointInfo() {
+            document.querySelector('.try-section').style.display = 'block';
+        }
+
+        function showEndpointInfo2() {
+            document.querySelector('.try-section-filter').style.display = 'block';
+        }
+
+        function fetchData() {
+            fetch('https://digital-event-hub.fly.dev/api/events')
+                .then(response => response.json())
+                .then(data => {
+                    const responseContainer = document.getElementById('response');
+                    responseContainer.innerHTML = '';
+                    data.forEach(json => {
+                        const textInfo = document.createElement('div');
+                        textInfo.className = 'response';
+                        textInfo.innerHTML = `
+                            {<br>
+                              "evento_id": ${json.evento_id}, <br>
+                              "nombre_evento": "${json.nombre_evento}",<br>
+                              "fecha_inicio": "${json.fecha_inicio}",<br>
+                              "fecha_termino": "${json.fecha_termino}",<br>
+                              "hora": "${json.hora}",<br>
+                              "ubicacion": "${json.ubicacion}",<br>
+                              "max_per": ${json.max_per},<br>
+                              "estado": "${json.estado}",<br>
+                              "fecha_autorizacion": "${json.fecha_autorizacion}",<br>
+                              "tipo_evento_nombre": "${json.tipo_evento_nombre}",<br>
+                              "organizador_nombre": "${json.organizador_nombre}",<br>
+                              "autorizado_nombre": "${json.autorizado_nombre}",<br>
+                              "categoria_nombre": "${json.categoria_nombre}"<br>
+                            }`;
+                        
+                        responseContainer.appendChild(textInfo);
+                    });
+
+                    responseContainer.style.display = 'block';
+                    document.querySelector('.btn-try').classList.add('active');
+                })
+                .catch(error => console.error('Error al obtener los datos:', error));
+        }
+
+        function fetchData2() {
+             let category = document.getElementById('inp-filter').value.toLowerCase();
+            if (category === "" ) {
+              alert("Ingresa un dato.");
+              return;
+            }else if(category !== "gratis" && category !== "paga"){
+              alert('Ingresa "Gratis" o "Paga".');
+              return;
+            }
+           const url = `https://digital-event-hub.fly.dev/api/events/${category}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const responseContainer = document.getElementById('response-filter');
+                    responseContainer.innerHTML = '';
+                    data.forEach(json => {
+                        const textInfo = document.createElement('div');
+                        textInfo.className = 'response-filter';
+                        textInfo.innerHTML = `
+                            {<br>
+                              "evento_id": ${json.evento_id}, <br>
+                              "nombre_evento": "${json.nombre_evento}",<br>
+                              "fecha_inicio": "${json.fecha_inicio}",<br>
+                              "fecha_termino": "${json.fecha_termino}",<br>
+                              "hora": "${json.hora}",<br>
+                              "ubicacion": "${json.ubicacion}",<br>
+                              "max_per": ${json.max_per},<br>
+                              "estado": "${json.estado}",<br>
+                              "fecha_autorizacion": "${json.fecha_autorizacion}",<br>
+                              "tipo_evento_nombre": "${json.tipo_evento_nombre}",<br>
+                              "organizador_nombre": "${json.organizador_nombre}",<br>
+                              "autorizado_nombre": "${json.autorizado_nombre}",<br>
+                              "categoria_nombre": "${json.categoria_nombre}"<br>
+                            }`;
+                        
+                        responseContainer.appendChild(textInfo);
+                    });
+
+                    responseContainer.style.display = 'block';
+                    document.querySelector('.btn-try-filter').classList.add('active');
+                })
+                .catch(error => console.error('Error al obtener los datos:', error));
+        }
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentación API REST - Eventos</h1>
+        <p>Autor: David Santiago Cen Pool.</p>
+        <p>Descripción: Api para obtener el listado de los eventos para el cliente, junto con filtros de busqueda mediante parametros.</p>
+
+        <div class="endpoint">
+            <h2>URL HOST: https://digital-event-hub.fly.dev/</h2>
+            <h3>Obtener todos los eventos</h3>
+            <pre><button class="btn-get" onclick="showEndpointInfo()">GET</button><code class="code-get-events">/api/events</code></pre>
+            
+            <div class="try-section">
+                <div class="info-get-events">
+                  <p class="text-code-get">Con este enpoint podrás obtener todos los eventos, este enpoint incluye una busqueda
+                    organizada mediante las fechas más próximas a ala fecha actual, con esto podrás mostrar los eventos más proximos
+                    a ala fecha de la actualidad.
+                  </p>
+                  <button class="btn-try" onclick="fetchData()">Conseguir</button>
+                </div>
+                  
+                <div id="response"><div id="response"></div></div>
+                
+            </div>
+        </div>
+        <div class="endpoint">
+          <h3>Filtrar los eventos por categorías</h3>
+          <pre><button class="btn-get" onclick="showEndpointInfo2()">GET</button><code class="code-get-events">/api/events/{category}</code></pre>
+          <div class="try-section-filter">
+            <div class="info-get-events-filter">
+              <p class="text-code-get-filer">Con este enpoint podrás obtener todos los eventos meidante un filtro de categorías,
+               la categoria es pasada mediante parámetros, estos paramatros por el momento solo son 2 de tipo string;
+               Gratis o Paga. si se pasan otros parametros que no sean los antes mencionados, mostrará un error. Ejemplo de uso:
+              </p>Valor<input id="inp-filter" class="inp-filter">
+              <button class="btn-try-filter" onclick="fetchData2()">Conseguir</button>
+              
+            </div>
+              
+            <div id="response-filter"><div id="response-filter"></div></div>
+          </div>
+        </div>
+</body>
+</html>
